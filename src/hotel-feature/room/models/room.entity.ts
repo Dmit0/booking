@@ -1,11 +1,12 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Hotel } from '../../hotel/models/hotel.entity';
 
 @Entity()
 export class Room {
   @PrimaryColumn('varchar')
   id: string;
 
-  @Column()
+  @ManyToOne(() => Hotel, { nullable: false, onDelete: 'CASCADE' })
   hotelId: string;
 
   @Column('float')
