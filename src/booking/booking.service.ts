@@ -18,7 +18,7 @@ export class BookingService {
     });
   }
   
-  getEmptyRooms(data: { dateRange: DateRangeDto, size: string, offset: string }) {
+  getEmptyRooms(data: any) {
     return this.repositoryService.getFilteredEmptyRooms(data)
   }
 }
