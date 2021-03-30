@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
 import { User } from '../../user/models/user.entity';
 import { Room } from '../../hotel-feature/room/models/room.entity';
 

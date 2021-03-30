@@ -1,18 +1,14 @@
-import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
-import { Hotel } from '../../hotel/models/hotel.entity';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { RoomType } from '../../../core/enums/room-type.enum';
 
 @Entity()
 export class Room {
   @PrimaryColumn('varchar')
   id: string;
 
-  @ManyToOne(() => Hotel, { nullable: false, onDelete: 'CASCADE' })
-  hotelId: string;
-
   @Column('float')
   pricePerDay: number;
 
-  //  @Type(() => RoomType)
-  @Column()
-  roomType: string;
+  @Column('enum', { enum: RoomType })
+  roomType: RoomType;
 }
