@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsDateString,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -15,10 +16,14 @@ import { UserTypeDto } from '../../user/dto/user.dto';
 
 export class GetRoomsDto extends PaginationDto {
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => DateRangeDto)
-  @ApiProperty({ type: DateRangeDto })
-  dateRange: DateRangeDto;
+  @IsDateString()
+  @ApiProperty({ type: String })
+  from: Date;
+
+  @IsOptional()
+  @IsDateString()
+  @ApiProperty({ type: String })
+  to: Date;
 
   @IsOptional()
   @IsEnum(PricePerDayFilter)

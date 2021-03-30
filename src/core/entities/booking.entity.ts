@@ -2,7 +2,7 @@ import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Room } from './room.entity';
 
-@Entity()
+@Entity('booking')
 export class Booking {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -21,6 +21,6 @@ export class Booking {
   @Column({ type: 'timestamptz' })
   end: Date;
 
-  @Column('float')
+  @Column('int')
   totalPrice: number;
 }

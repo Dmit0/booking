@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { DateRangeDto } from '../core/dto/range.dto';
+import { tap } from 'rxjs/operators';
 import { BookingRepositoryService } from './booking.repository.service';
-import { BookingDto } from './dto/booking.dto';
 
 
 @Injectable()
 export class BookingService {
   constructor(private readonly repositoryService: BookingRepositoryService,) {}
 
-  reservation(data: BookingDto): Observable<any> {
+  reservation(data: any): Observable<any> {
     const { dateRange, ...options } = data;
     return this.repositoryService.reservationCreate({
       ...options,
@@ -17,8 +16,10 @@ export class BookingService {
       start: dateRange.from
     });
   }
-  
-  getEmptyRooms(data: any) {
-    return this.repositoryService.getFilteredEmptyRooms(data)
+
+  getCloseRooms(options: any, priceOrder: any): Observable<any> {
+    return this.repositoryService.closedRoomsIds(options, priceOrder).pipe(
+      tap(console.log),
+    )
   }
 }

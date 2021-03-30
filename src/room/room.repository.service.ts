@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { from, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-import { Connection, EntityTarget, SelectQueryBuilder } from 'typeorm';
-import { PaginationDto } from '../core/dto/pagination.dto';
-import { PricePerDayFilter } from '../core/enums/filter.enum';
+import { Connection } from 'typeorm';
 import { RoomDto } from './dto/room.dto';
 import { Room } from '../core/entities/room.entity';
 import { RoomCreateResponseDto } from './dto/room.response';
 
 @Injectable()
 export class RoomRepositoryService {
-  constructor(private readonly connection: Connection) {}
+  constructor(private readonly connection: Connection) {
+  }
 
   createRoom(room: RoomDto): Observable<RoomCreateResponseDto> {
     return from(this.connection.getRepository(Room).save(room)).pipe(
@@ -33,5 +32,11 @@ export class RoomRepositoryService {
       take: size || 5,
       order
     }));
+  }
+
+  getOpenedRooms(ids: string[] ) {
+    const query = this.connection.getRepository(Room).createQueryBuilder('room')
+    query.where('room.id NOT IN (:...ids)', { ids })
+    return from(query.getRawMany())
   }
 }

@@ -33,7 +33,7 @@ export class RoomController {
     return this.roomService.getRooms(data);
   }
 
-  @Post('roomReservation')
+  @Post('reservation')
   @ApiOkResponse({ type: RoomBookingResponseDto })
   @ApiBadRequestResponse({
     type: ErrorResponseDto,
