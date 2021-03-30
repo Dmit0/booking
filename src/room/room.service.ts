@@ -70,7 +70,7 @@ export class RoomService {
         mergeMap(closedRoomIds => this.repositoryService.getOpenedRooms(Array.isArray(closedRoomIds)
           ? closedRoomIds.map(idObj => idObj.room_id)
           : [closedRoomIds.room_id]
-        ))
+          , size, offset))
       )
     }
     return this.repositoryService.filterRooms(priceOrder, offset, size)

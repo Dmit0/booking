@@ -34,9 +34,11 @@ export class RoomRepositoryService {
     }));
   }
 
-  getOpenedRooms(ids: string[] ) {
+  getOpenedRooms(ids: string[], size, offset ) {
     const query = this.connection.getRepository(Room).createQueryBuilder('room')
     query.where('room.id NOT IN (:...ids)', { ids })
+      .limit(size || 5)
+      .skip(offset || 0)
     return from(query.getRawMany())
   }
 }

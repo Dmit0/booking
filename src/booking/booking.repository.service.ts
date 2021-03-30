@@ -26,7 +26,5 @@ export class BookingRepositoryService {
       .where(`booking.start >= '${ new Date(from).toUTCString() }' AND booking.end <= '${ new Date(to).toUTCString() }'`)
       .orderBy('room.pricePerDay', priceOrder.pricePerDay)
       .getRawMany());
-    // .limit(options.size || 5)
-    // .skip(options.offset || 0)
   }
 }
