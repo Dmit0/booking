@@ -1,10 +1,17 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './dataBase/database.module';
+import { RoomModule } from './hotel-feature/room/room.module';
+import { UserModule } from './user/user.module';
+import { BookingModule } from './booking/booking.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot(),
+    DatabaseModule,
+    UserModule,
+    BookingModule,
+    RoomModule,
+  ],
 })
 export class AppModule {}
