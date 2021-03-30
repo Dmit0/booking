@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { DateRangeDto } from '../core/dto/range.dto';
+import { IBooking, IBookingCreate } from '../core/types/booking.type';
+import { IPricePerDay } from '../core/types/filter.types';
+import { IDateRange } from '../core/types/range.types';
+import { IGetCloseRoomsOptions, IRoomClosedResponse } from '../core/types/room.types';
 import { BookingRepositoryService } from './booking.repository.service';
 
 
@@ -8,7 +13,7 @@ import { BookingRepositoryService } from './booking.repository.service';
 export class BookingService {
   constructor(private readonly repositoryService: BookingRepositoryService,) {}
 
-  reservation(data: any): Observable<any> {
+  reservation(data: IBookingCreate & { dateRange: IDateRange} ): Observable<IBooking> {
     const { dateRange, ...options } = data;
     return this.repositoryService.reservationCreate({
       ...options,
@@ -17,9 +22,18 @@ export class BookingService {
     });
   }
 
-  getCloseRooms(options: any, priceOrder: any): Observable<any> {
-    return this.repositoryService.closedRoomsIds(options, priceOrder).pipe(
-      tap(console.log),
-    )
+  getCloseRooms(options: IGetCloseRoomsOptions, priceOrder: IPricePerDay): Observable<IRoomClosedResponse[] | IRoomClosedResponse> {
+    return this.repositoryService.closedRoomsIds(options, priceOrder)
+  }
+
+  checkIsRoomReserved(roomId: string, dateRange: DateRangeDto): Observable<boolean> {
+    return this.repositoryService.closedRoomsIds(dateRange).pipe(
+      mergeMap(closedRooms => {
+        if (Array.isArray(closedRooms)) {
+          return of(!!closedRooms.find(item => item.room_id === roomId));
+        }
+        return of(closedRooms.room_id === roomId);
+      }),
+    );
   }
 }

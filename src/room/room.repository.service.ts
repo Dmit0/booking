@@ -4,7 +4,7 @@ import { map, mergeMap } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 import { RoomDto } from './dto/room.dto';
 import { Room } from '../core/entities/room.entity';
-import { RoomCreateResponseDto } from './dto/room.response';
+import { RoomCreateResponseDto, RoomResponseDto } from './dto/room.response';
 
 @Injectable()
 export class RoomRepositoryService {
@@ -26,19 +26,29 @@ export class RoomRepositoryService {
     );
   }
 
-  filterRooms(order, offset?: number, size?: number) {
+  filterRooms(order, offset?: number, size?: number): Observable<RoomResponseDto> {
     return from(this.connection.getRepository(Room).findAndCount({
       skip: offset || 0,
       take: size || 5,
       order
-    }));
+    })).pipe(
+      map(([rooms, total]) => ({
+        rooms,
+        total
+      }))
+    );
   }
 
-  getOpenedRooms(ids: string[], size, offset ) {
+  getOpenedRooms(ids: string[], size, offset ): Observable<RoomResponseDto> {
     const query = this.connection.getRepository(Room).createQueryBuilder('room')
     query.where('room.id NOT IN (:...ids)', { ids })
       .limit(size || 5)
       .skip(offset || 0)
-    return from(query.getRawMany())
+    return from(query.getRawMany()).pipe(
+      map(rooms => ({
+        total: rooms.length,
+        rooms
+      }))
+    )
   }
 }

@@ -8,11 +8,9 @@ export class Booking {
   id: string;
 
   @ManyToOne(() => User, { nullable: false, onDelete: 'RESTRICT' })
-  // @JoinColumn({ name: 'ownerId' })
   owner: User;
 
   @ManyToOne(() => Room, { nullable: false, onDelete: 'RESTRICT' })
-  // @JoinColumn({ name: 'roomId' })
   room: Room;
 
   @Column({ type: 'timestamptz' })
