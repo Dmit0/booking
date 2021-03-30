@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../user/models/user.entity';
 import { Room } from '../../hotel-feature/room/models/room.entity';
 
@@ -8,6 +8,7 @@ export class Booking {
   id: string;
 
   @ManyToOne(() => User, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn()
   ownerId: string;
 
   @ManyToOne(() => Room, { nullable: false, onDelete: 'RESTRICT' })
