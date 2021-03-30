@@ -3,9 +3,9 @@ import { Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { BookingService } from '../booking/booking.service';
 import { ErrorMessage } from '../core/enums/errors.enum';
-import { UserTypeDto } from '../user/dto/user.dto';
+import { PricePerDayFilter } from '../core/enums/filter.enum';
 import { UserService } from '../user/user.service';
-import { RoomCreateDto, RoomReservationDto } from './dto/room.dto';
+import { GetRoomsDto, RoomCreateDto, RoomReservationDto } from './dto/room.dto';
 import { RoomCreateResponseDto } from './dto/room.response';
 import { RoomRepositoryService } from './room.repository.service';
 
@@ -40,5 +40,17 @@ export class RoomService {
         )
       })
     )
+  }
+
+  getRooms(data: GetRoomsDto) {
+    const { dateRange, offset, size, pricePerDay } = data;
+    if (dateRange) {
+      return this.bookingService.getEmptyRooms(data)
+    }
+    return this.repositoryService.filterRooms({
+      pricePerDay: pricePerDay
+        ? pricePerDay
+        : PricePerDayFilter.DESC
+    }, offset, size)
   }
 }

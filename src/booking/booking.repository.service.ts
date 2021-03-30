@@ -8,9 +8,11 @@ import { Booking } from '../core/entities/booking.entity';
 export class BookingRepositoryService {
   constructor(private readonly connection: Connection) {}
 
-  reservationCreate(data: { userId: string, dateRange: DateRangeDto, roomId: string }) {
-    return from(this.connection.getRepository(Booking).save({
+  reservationCreate(data: Partial<Booking>) {
+    return from(this.connection.getRepository(Booking).save(data));
+  }
 
-    }))
+  getFilteredEmptyRooms(data: { dateRange: DateRangeDto, size: string, offset: string } ) {
+    return this.connection.getRepository(Booking).createQueryBuilder('booking').select()
   }
 }

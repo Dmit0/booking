@@ -30,8 +30,7 @@ export class RoomController {
     description: ErrorMessage.VALIDATION_ERROR,
   })
   getRooms(@Query() data: GetRoomsDto) {
-    console.log(data);
-    return;
+    return this.roomService.getRooms(data);
   }
 
   @Post('roomReservation')

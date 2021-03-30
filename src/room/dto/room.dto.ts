@@ -9,32 +9,21 @@ import {
 } from 'class-validator';
 import { PaginationDto } from '../../core/dto/pagination.dto';
 import { DateRangeDto } from '../../core/dto/range.dto';
+import { PricePerDayFilter } from '../../core/enums/filter.enum';
 import { RoomType } from '../../core/enums/room-type.enum';
 import { UserTypeDto } from '../../user/dto/user.dto';
 
-export class FilterEmptyRoomsDto extends PaginationDto {
+export class GetRoomsDto extends PaginationDto {
   @IsOptional()
-  @IsNumber()
-  @ApiProperty({ type: Number, required: false })
-  pricePerDay: number;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty({ type: Number, required: false })
-  isEmpty: boolean;
-}
-
-export class GetRoomsDto {
   @ValidateNested({ each: true })
   @Type(() => DateRangeDto)
   @ApiProperty({ type: DateRangeDto })
   dateRange: DateRangeDto;
 
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => FilterEmptyRoomsDto)
-  @ApiProperty({ type: FilterEmptyRoomsDto, required: false })
-  filter: FilterEmptyRoomsDto;
+  @IsEnum(PricePerDayFilter)
+  @ApiProperty({ enum: PricePerDayFilter, required: false })
+  pricePerDay: PricePerDayFilter;
 }
 
 export class RoomReservationDto {
