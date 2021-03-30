@@ -1,16 +1,19 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  OneToMany,
+} from 'typeorm';
+import { Booking } from '../../booking/models/booking.entity';
 
 @Entity()
 export class User {
   @PrimaryColumn('varchar')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   firstName: string;
 
-  @Column()
-  lastName: string;
-
-  @Column({ unique: true })
-  email: string;
+  @OneToMany(() => Booking, booking => booking.ownerId )
+  booking: Booking[];
 }

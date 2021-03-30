@@ -1,17 +1,14 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { RoomType } from '../../../core/enums/room-type.enum';
 
 @Entity()
 export class Room {
   @PrimaryColumn('varchar')
   id: string;
 
-  @Column()
-  hotelId: string;
-
   @Column('float')
   pricePerDay: number;
 
-  //  @Type(() => RoomType)
-  @Column()
-  roomType: string;
+  @Column('enum', { enum: RoomType })
+  roomType: RoomType;
 }
