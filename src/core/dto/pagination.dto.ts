@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumberString, IsOptional } from 'class-validator';
 
 export class PaginationDto {
   @IsOptional()
-  @IsNumber()
+  @IsNumberString()
   @ApiProperty({ type: Number, required: false })
   offset?: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsNumberString()
   @ApiProperty({ type: Number, required: false })
   size?: number;
 }
