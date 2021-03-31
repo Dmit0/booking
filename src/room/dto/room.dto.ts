@@ -6,7 +6,6 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  ValidateNested,
 } from 'class-validator';
 import { PaginationDto } from '../../core/dto/pagination.dto';
 import { DateRangeDto } from '../../core/dto/range.dto';
@@ -17,12 +16,12 @@ import { UserTypeDto } from '../../user/dto/user.dto';
 export class GetRoomsDto extends PaginationDto {
   @IsOptional()
   @IsDateString()
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: String, required: false  })
   from: Date;
 
   @IsOptional()
   @IsDateString()
-  @ApiProperty({ type: String })
+  @ApiProperty({ type: String, required: false  })
   to: Date;
 
   @IsOptional()
@@ -32,29 +31,16 @@ export class GetRoomsDto extends PaginationDto {
 }
 
 export class RoomReservationDto {
-  @ValidateNested({ each: true })
   @Type(() => UserTypeDto)
   @ApiProperty({ type: UserTypeDto })
   user: UserTypeDto;
 
-  @ValidateNested({ each: true })
   @Type(() => DateRangeDto)
   @ApiProperty({ type: DateRangeDto })
   dateRange: DateRangeDto;
 }
 
-export class RoomDto {
-  @IsNumber()
-  pricePerDay: number;
-
-  @IsEnum(RoomType)
-  roomType: RoomType;
-
-  @IsString()
-  name: string;
-}
-
-export class RoomReservationQueryDto {
+export class RoomReservationParamsDto {
   @IsString()
   @ApiProperty({ type: String })
   roomId: string;

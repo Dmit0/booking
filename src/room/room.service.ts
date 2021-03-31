@@ -4,10 +4,9 @@ import { mergeMap } from 'rxjs/operators';
 import { BookingService } from '../booking/booking.service';
 import { ErrorMessage } from '../core/enums/errors.enum';
 import { PricePerDayFilter } from '../core/enums/filter.enum';
-import { IRoomClosedResponse } from '../core/types/room.types';
 import { UserService } from '../user/user.service';
 import { GetRoomsDto, RoomCreateDto, RoomReservationDto } from './dto/room.dto';
-import { RoomCreateResponseDto, RoomResponseDto } from './dto/room.response';
+import { PaginatedRoomResponseDto, RoomCreateResponseDto } from './dto/room.response';
 import { RoomRepositoryService } from './room.repository.service';
 import { countRangeDates } from 'src/core/utils/date.utils';
 
@@ -53,25 +52,19 @@ export class RoomService {
     )
   }
 
-  getRooms(data: GetRoomsDto): Observable<RoomResponseDto> {
+  getRooms(data: GetRoomsDto): Observable<PaginatedRoomResponseDto> {
     const { from, to, pricePerDay, size, offset } = data;
     const priceOrder = RoomService.getPriceOrder(pricePerDay);
     if (from && to) {
-      return this.bookingService.getCloseRooms({ from, to, size, offset }, priceOrder).pipe(
+      return this.bookingService.getCloseRooms({ from, to }, priceOrder).pipe(
         mergeMap(closedRoomIds => this.repositoryService.getOpenedRooms(
-          RoomService.getClosedRoomsArray(closedRoomIds),
+          closedRoomIds.map(item => item.room.id),
           size,
           offset,
         )),
       );
     }
     return this.repositoryService.filterRooms(priceOrder, offset, size);
-  }
-
-  private static getClosedRoomsArray(closedRoomIds: IRoomClosedResponse[] | IRoomClosedResponse) {
-    return Array.isArray(closedRoomIds)
-      ? closedRoomIds.map(idObj => idObj.room_id)
-      : [closedRoomIds.room_id];
   }
   
   private static getPriceOrder(pricePerDay?: PricePerDayFilter): { pricePerDay: PricePerDayFilter } {

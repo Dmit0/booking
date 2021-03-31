@@ -5,7 +5,6 @@ import { DateRangeDto } from '../core/dto/range.dto';
 import { Booking } from '../core/entities/booking.entity';
 import { IBooking } from '../core/types/booking.type';
 import { IPricePerDay } from '../core/types/filter.types';
-import { IRoomClosedResponse } from '../core/types/room.types';
 
 @Injectable()
 export class BookingRepositoryService {
@@ -21,14 +20,13 @@ export class BookingRepositoryService {
     });
   }
 
-  closedRoomsIds(options: DateRangeDto, priceOrder?: IPricePerDay): Observable<IRoomClosedResponse[] | IRoomClosedResponse> {
+  closedRoomsIds(options: DateRangeDto, priceOrder?: IPricePerDay): Observable<IBooking[]> {
     const { from, to } = options;
     const query = this.connection.getRepository(Booking).createQueryBuilder('booking');
     this.addRelations([ 'room' ], query);
     query
-      .select('room.id')
       .where(`booking.start >= '${ new Date(from).toUTCString() }' AND booking.end <= '${ new Date(to).toUTCString() }'`)
       .orderBy('room.pricePerDay', priceOrder?.pricePerDay || 'DESC')
-    return _from(query.getRawMany());
+    return _from(query.getMany());
   }
 }

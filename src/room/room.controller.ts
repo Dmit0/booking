@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
@@ -10,12 +10,12 @@ import { ErrorMessage } from '../core/enums/errors.enum';
 import {
   GetRoomsDto,
   RoomCreateDto, RoomReservationDto,
-  RoomReservationQueryDto,
+  RoomReservationParamsDto,
 } from './dto/room.dto';
 import {
+  PaginatedRoomResponseDto,
   RoomBookingResponseDto,
   RoomCreateResponseDto,
-  RoomResponseDto,
 } from './dto/room.response';
 import { RoomService } from './room.service';
 
@@ -24,16 +24,16 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Get()
-  @ApiOkResponse({ type: RoomResponseDto })
+  @ApiOkResponse({ type: PaginatedRoomResponseDto })
   @ApiBadRequestResponse({
     type: ErrorResponseDto,
     description: ErrorMessage.VALIDATION_ERROR,
   })
-  getRooms(@Query() data: GetRoomsDto) {
+  getRooms(@Query() data: GetRoomsDto): Observable<PaginatedRoomResponseDto>{
     return this.roomService.getRooms(data);
   }
 
-  @Post('reservation')
+  @Post('reservation/:roomId')
   @ApiOkResponse({ type: RoomBookingResponseDto })
   @ApiBadRequestResponse({
     type: ErrorResponseDto,
@@ -44,13 +44,13 @@ export class RoomController {
     description: ErrorMessage.ROOM_NOT_FOUND,
   })
   reservation(
-    @Query() params: RoomReservationQueryDto,
+    @Param() params: RoomReservationParamsDto,
     @Body() data: RoomReservationDto,
   ) {
     return this.roomService.reserveRoom(params.roomId, data)
   }
 
-  @Put('create')
+  @Post('create')
   @ApiOkResponse({ type: RoomCreateResponseDto })
   @ApiBadRequestResponse({
     type: ErrorResponseDto,

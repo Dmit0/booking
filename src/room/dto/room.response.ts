@@ -1,12 +1,29 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
-import { RoomDto } from './room.dto';
+import { RoomType } from '../../core/enums/room-type.enum';
+
+export class RoomResponseDto {
+  @ApiResponseProperty({ type: String })
+  id: string ;
+
+  @ApiResponseProperty({ type: Number })
+  number: number;
+
+  @ApiResponseProperty({ type: Number })
+  pricePerDay: number;
+
+  @ApiResponseProperty({ enum: RoomType })
+  roomType: RoomType;
+
+  @ApiResponseProperty({ type: String })
+  name: string;
+}
 
 @Exclude()
-export class RoomResponseDto {
-  @Type(() => RoomDto)
-  @ApiResponseProperty({ type: [RoomDto] })
-  rooms: RoomDto[];
+export class PaginatedRoomResponseDto {
+  @Type(() => RoomResponseDto)
+  @ApiResponseProperty({ type: [RoomResponseDto] })
+  rooms: RoomResponseDto[];
 
   @ApiResponseProperty({ type: Number })
   total: number;

@@ -10,14 +10,12 @@ import databaseConfig from './config/database.config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.local', '.env'],
-      ignoreEnvFile: process.env.NODE_ENV === 'production',
+      envFilePath: ['.env'],
       load: [databaseConfig],
     }),
     TypeOrmModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
-        ...config.get('db'),
-        logging: 'all'
+        ...config.get('db')
       }),
       inject: [ConfigService],
     }),

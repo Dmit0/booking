@@ -1,4 +1,7 @@
 import { registerAs } from '@nestjs/config';
+import { Booking } from '../core/entities/booking.entity';
+import { Room } from '../core/entities/room.entity';
+import { User } from '../core/entities/user.entity';
 
 export default registerAs('db', () => ({
   type: 'postgres',
@@ -7,7 +10,11 @@ export default registerAs('db', () => ({
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  entities: [
+    Booking,
+    User,
+    Room
+  ],
   synchronize: true,
   logging: ["error"]
 }));

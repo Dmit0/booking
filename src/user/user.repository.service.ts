@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { from, Observable } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 import { User } from '../core/entities/user.entity';
 import { UserTypeDto } from './dto/user.dto';
@@ -16,8 +16,6 @@ export class UserRepositoryService {
   }
 
   createUser(user: UserTypeDto): Observable<User> {
-    return from(this.connection.getRepository(User).save(user)).pipe(
-      mergeMap(createdUser => this.findOne({ email: createdUser.email })),
-    );
+    return from(this.connection.getRepository(User).save(user));
   }
 }

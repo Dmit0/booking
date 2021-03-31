@@ -5,7 +5,6 @@ import { DateRangeDto } from '../core/dto/range.dto';
 import { IBooking, IBookingCreate } from '../core/types/booking.type';
 import { IPricePerDay } from '../core/types/filter.types';
 import { IDateRange } from '../core/types/range.types';
-import { IGetCloseRoomsOptions, IRoomClosedResponse } from '../core/types/room.types';
 import { BookingRepositoryService } from './booking.repository.service';
 
 
@@ -22,17 +21,14 @@ export class BookingService {
     });
   }
 
-  getCloseRooms(options: IGetCloseRoomsOptions, priceOrder: IPricePerDay): Observable<IRoomClosedResponse[] | IRoomClosedResponse> {
+  getCloseRooms(options: DateRangeDto, priceOrder: IPricePerDay): Observable<IBooking[]> {
     return this.repositoryService.closedRoomsIds(options, priceOrder)
   }
 
   checkIsRoomReserved(roomId: string, dateRange: DateRangeDto): Observable<boolean> {
     return this.repositoryService.closedRoomsIds(dateRange).pipe(
       mergeMap(closedRooms => {
-        if (Array.isArray(closedRooms)) {
-          return of(!!closedRooms.find(item => item.room_id === roomId));
-        }
-        return of(closedRooms.room_id === roomId);
+          return of(!!closedRooms.find(item => item.room.id === roomId));
       }),
     );
   }
