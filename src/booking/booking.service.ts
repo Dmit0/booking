@@ -1,34 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { Observable, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
-import { DateRangeDto } from '../core/dto/range.dto';
-import { IBooking, IBookingCreate } from '../core/types/booking.type';
-import { IPricePerDay } from '../core/types/filter.types';
-import { IDateRange } from '../core/types/range.types';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { DateRangeDto } from '../core/dto';
+import { IBooking, IBookingCreate, IPricePerDay, IDateRange } from '../core/types';
 import { BookingRepositoryService } from './booking.repository.service';
 
 
 @Injectable()
 export class BookingService {
-  constructor(private readonly repositoryService: BookingRepositoryService,) {}
+  constructor(private readonly repositoryService: BookingRepositoryService) {}
 
-  reservation(data: IBookingCreate & { dateRange: IDateRange} ): Observable<IBooking> {
+  createBooking(data: IBookingCreate & { dateRange: IDateRange} ): Observable<IBooking> {
     const { dateRange, ...options } = data;
-    return this.repositoryService.reservationCreate({
+    return this.repositoryService.createBooking({
       ...options,
       end: dateRange.to,
       start: dateRange.from
     });
   }
 
-  getCloseRooms(options: DateRangeDto, priceOrder: IPricePerDay): Observable<IBooking[]> {
-    return this.repositoryService.closedRoomsIds(options, priceOrder)
+  getBookedRooms(options: DateRangeDto, priceOrder: IPricePerDay): Observable<IBooking[]> {
+    return this.repositoryService.findBookings(options, priceOrder)
   }
 
-  checkIsRoomReserved(roomId: string, dateRange: DateRangeDto): Observable<boolean> {
-    return this.repositoryService.closedRoomsIds(dateRange).pipe(
-      mergeMap(closedRooms => {
-          return of(!!closedRooms.find(item => item.room.id === roomId));
+  checkRoomIsReserved(roomId: string, dateRange: DateRangeDto): Observable<boolean> {
+    return this.repositoryService.findBookings(dateRange).pipe(
+      map(closedRooms => {
+          return !!closedRooms.find(item => item.room.id === roomId);
       }),
     );
   }

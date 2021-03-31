@@ -7,11 +7,10 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { PaginationDto } from '../../core/dto/pagination.dto';
-import { DateRangeDto } from '../../core/dto/range.dto';
-import { PricePerDayFilter } from '../../core/enums/filter.enum';
-import { RoomType } from '../../core/enums/room-type.enum';
-import { UserTypeDto } from '../../user/dto/user.dto';
+import { PaginationDto, DateRangeDto } from '../../core/dto';
+import { PricePerDaySorting } from '../../core/enums';
+import { RoomType } from '../../core/enums';
+import { UserDto } from '../../user/dto';
 
 export class GetRoomsDto extends PaginationDto {
   @IsOptional()
@@ -25,15 +24,15 @@ export class GetRoomsDto extends PaginationDto {
   to: Date;
 
   @IsOptional()
-  @IsEnum(PricePerDayFilter)
-  @ApiProperty({ enum: PricePerDayFilter, required: false })
-  pricePerDay: PricePerDayFilter;
+  @IsEnum(PricePerDaySorting)
+  @ApiProperty({ enum: PricePerDaySorting, required: false })
+  pricePerDay: PricePerDaySorting;
 }
 
 export class RoomReservationDto {
-  @Type(() => UserTypeDto)
-  @ApiProperty({ type: UserTypeDto })
-  user: UserTypeDto;
+  @Type(() => UserDto)
+  @ApiProperty({ type: UserDto })
+  user: UserDto;
 
   @Type(() => DateRangeDto)
   @ApiProperty({ type: DateRangeDto })

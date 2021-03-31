@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { from as _from, Observable } from 'rxjs';
 import { Connection, SelectQueryBuilder } from 'typeorm';
-import { DateRangeDto } from '../core/dto/range.dto';
-import { Booking } from '../core/entities/booking.entity';
-import { IBooking } from '../core/types/booking.type';
-import { IPricePerDay } from '../core/types/filter.types';
+import { DateRangeDto } from '../core/dto';
+import { Booking } from '../core/entities';
+import { IBooking, IPricePerDay } from '../core/types';
 
 @Injectable()
 export class BookingRepositoryService {
   constructor(private readonly connection: Connection) {}
 
-  reservationCreate(options: IBooking): Observable<IBooking> {
+  createBooking(options: IBooking): Observable<Booking> {
     return _from(this.connection.getRepository(Booking).save(options));
   }
 
@@ -20,7 +19,7 @@ export class BookingRepositoryService {
     });
   }
 
-  closedRoomsIds(options: DateRangeDto, priceOrder?: IPricePerDay): Observable<IBooking[]> {
+  findBookings(options: DateRangeDto, priceOrder?: IPricePerDay): Observable<Booking[]> {
     const { from, to } = options;
     const query = this.connection.getRepository(Booking).createQueryBuilder('booking');
     this.addRelations([ 'room' ], query);

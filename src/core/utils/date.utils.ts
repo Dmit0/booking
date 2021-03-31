@@ -1,6 +1,5 @@
 import * as moment from 'moment';
-import { DateRangeDto } from '../dto/range.dto';
-
+import { DateRangeDto } from '../dto';
 
 export const countRangeDates = (dateRange: DateRangeDto): number => {
   const start = moment(dateRange.from)

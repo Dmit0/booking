@@ -1,8 +1,8 @@
-import { Room } from '../entities/room.entity';
-import { User } from '../entities/user.entity';
+import { Room } from '../entities';
+import { User } from '../entities';
 
 export interface IBooking {
-  id?: string
+  id?: string;
   owner: User;
   room: Room;
   start: Date;

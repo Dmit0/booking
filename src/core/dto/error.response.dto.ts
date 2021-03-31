@@ -1,5 +1,5 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { ErrorMessage } from '../enums/errors.enum';
+import { ErrorMessage } from '../enums';
 
 export class ErrorResponseDto {
   @ApiResponseProperty({ type: Number })

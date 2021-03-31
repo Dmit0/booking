@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RoomModule } from './room/room.module';
-import { UserModule } from './user/user.module';
-import { BookingModule } from './booking/booking.module';
+import { RoomModule } from './room';
+import { UserModule } from './user';
+import { BookingModule } from './booking';
 import databaseConfig from './config/database.config';
 
 @Module({
@@ -14,9 +14,7 @@ import databaseConfig from './config/database.config';
       load: [databaseConfig],
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: (config: ConfigService) => ({
-        ...config.get('db')
-      }),
+      useFactory: (config: ConfigService) => config.get('db'),
       inject: [ConfigService],
     }),
     UserModule,

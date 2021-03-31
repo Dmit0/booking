@@ -5,18 +5,17 @@ import {
   ApiOkResponse,
 } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
-import { ErrorResponseDto } from '../core/dto/error.response.dto';
-import { ErrorMessage } from '../core/enums/errors.enum';
+import { ErrorResponseDto } from '../core/dto';
+import { ErrorMessage } from '../core/enums';
 import {
   GetRoomsDto,
-  RoomCreateDto, RoomReservationDto,
+  RoomCreateDto,
+  RoomReservationDto,
   RoomReservationParamsDto,
-} from './dto/room.dto';
-import {
   PaginatedRoomResponseDto,
   RoomBookingResponseDto,
   RoomCreateResponseDto,
-} from './dto/room.response';
+} from './dto';
 import { RoomService } from './room.service';
 
 @Controller('rooms')
@@ -46,8 +45,8 @@ export class RoomController {
   reservation(
     @Param() params: RoomReservationParamsDto,
     @Body() data: RoomReservationDto,
-  ) {
-    return this.roomService.reserveRoom(params.roomId, data)
+  ): Observable<RoomBookingResponseDto> {
+    return this.roomService.bookRoom(params.roomId, data);
   }
 
   @Post('create')

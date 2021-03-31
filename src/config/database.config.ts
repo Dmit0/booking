@@ -1,7 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { Booking } from '../core/entities/booking.entity';
-import { Room } from '../core/entities/room.entity';
-import { User } from '../core/entities/user.entity';
+import { Booking, Room, User } from '../core/entities';
 
 export default registerAs('db', () => ({
   type: 'postgres',

@@ -1,5 +1,5 @@
 import { Entity, Column, Generated, PrimaryGeneratedColumn } from 'typeorm';
-import { RoomType } from '../enums/room-type.enum';
+import { RoomType } from '../enums';
 
 @Entity()
 export class Room {

@@ -1,6 +1,6 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
-import { RoomType } from '../../core/enums/room-type.enum';
+import { RoomType } from '../../core/enums';
 
 export class RoomResponseDto {
   @ApiResponseProperty({ type: String })

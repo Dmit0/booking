@@ -1,52 +1,67 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
-import { BookingService } from '../booking/booking.service';
-import { ErrorMessage } from '../core/enums/errors.enum';
-import { PricePerDayFilter } from '../core/enums/filter.enum';
-import { UserService } from '../user/user.service';
-import { GetRoomsDto, RoomCreateDto, RoomReservationDto } from './dto/room.dto';
-import { PaginatedRoomResponseDto, RoomCreateResponseDto } from './dto/room.response';
+import { map, mergeMap, tap } from 'rxjs/operators';
+import { BookingService } from '../booking';
+import { ErrorMessage, PricePerDaySorting } from '../core/enums';
+import { countRangeDates } from '../core/utils';
+import { UserService } from '../user';
+import {
+  GetRoomsDto,
+  RoomCreateDto,
+  RoomReservationDto,
+  PaginatedRoomResponseDto,
+  RoomCreateResponseDto, RoomBookingResponseDto,
+} from './dto';
 import { RoomRepositoryService } from './room.repository.service';
-import { countRangeDates } from 'src/core/utils/date.utils';
 
 @Injectable()
 export class RoomService {
-  constructor(private readonly repositoryService: RoomRepositoryService,
-              private readonly userService: UserService,
-              private readonly bookingService: BookingService,
-  ) {
-  }
+  constructor(
+    private readonly repositoryService: RoomRepositoryService,
+    private readonly userService: UserService,
+    private readonly bookingService: BookingService,
+  ) {}
 
   createRoom(data: RoomCreateDto): Observable<RoomCreateResponseDto> {
     return this.repositoryService.findOne({ name: data.name }).pipe(
-      mergeMap(response => {
-        if (response) throw new NotFoundException(ErrorMessage.ROOM_IS_EXIST)
-        return this.repositoryService.createRoom(data);
+      tap(existingRoom => {
+        if(existingRoom) {
+          throw new ConflictException(ErrorMessage.ROOM_IS_EXIST)
+        }
+      }),
+      mergeMap(() => {
+        return this.repositoryService.createRoom(data).pipe(
+          map(room => ({ roomId: room.id }))
+        );
       })
     );
   }
 
-  reserveRoom(roomId: string, data: RoomReservationDto) {
+  bookRoom(roomId: string, data: RoomReservationDto): Observable<RoomBookingResponseDto> {
     const { user, dateRange } = data;
     return this.repositoryService.findOne({ id: roomId }).pipe(
-      mergeMap(room => {
+      tap(room => {
         if (!room) {
           throw new NotFoundException(ErrorMessage.ROOM_NOT_FOUND);
         }
-        return this.bookingService.checkIsRoomReserved(roomId, dateRange).pipe(
-          mergeMap(isRoomReserved => {
-            if (isRoomReserved) {
-              throw new NotFoundException(ErrorMessage.ROOM_IS_RESERVED);
+      }),
+      mergeMap(room => {
+        return this.bookingService.checkRoomIsReserved(roomId, dateRange).pipe(
+          tap(reserved => {
+            if (reserved) {
+              throw new ConflictException(ErrorMessage.ROOM_IS_RESERVED);
             }
-            return this.userService.createUser(user).pipe(
-              mergeMap(createdUser => this.bookingService.reservation({
-                owner: createdUser,
-                totalPrice: room.pricePerDay * countRangeDates(dateRange),
-                dateRange,
-                room,
-              })))
-          })
+          }),
+          mergeMap(() => this.userService.createUser(user).pipe(
+            mergeMap(createdUser => this.bookingService.createBooking({
+              owner: createdUser,
+              totalPrice: room.pricePerDay * countRangeDates(dateRange),
+              dateRange,
+              room,
+            }).pipe(
+              map(booking => ({ bookingId: booking.id }))
+            )))
+          )
         )
       })
     )
@@ -56,22 +71,22 @@ export class RoomService {
     const { from, to, pricePerDay, size, offset } = data;
     const priceOrder = RoomService.getPriceOrder(pricePerDay);
     if (from && to) {
-      return this.bookingService.getCloseRooms({ from, to }, priceOrder).pipe(
-        mergeMap(closedRoomIds => this.repositoryService.getOpenedRooms(
+      return this.bookingService.getBookedRooms({ from, to }, priceOrder).pipe(
+        mergeMap(closedRoomIds => this.repositoryService.getAvailableRooms(
           closedRoomIds.map(item => item.room.id),
           size,
           offset,
         )),
       );
     }
-    return this.repositoryService.filterRooms(priceOrder, offset, size);
+    return this.repositoryService.searchRooms(priceOrder, offset, size);
   }
   
-  private static getPriceOrder(pricePerDay?: PricePerDayFilter): { pricePerDay: PricePerDayFilter } {
+  private static getPriceOrder(pricePerDay?: PricePerDaySorting): { pricePerDay: PricePerDaySorting } {
     return {
       pricePerDay: pricePerDay
         ? pricePerDay
-        : PricePerDayFilter.DESC,
+        : PricePerDaySorting.DESC,
     };
   }
 }
