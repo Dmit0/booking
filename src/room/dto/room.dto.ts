@@ -5,7 +5,7 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
-  IsString,
+  IsString, ValidateNested,
 } from 'class-validator';
 import { PaginationDto, DateRangeDto } from '../../core/dto';
 import { PricePerDaySorting } from '../../core/enums';
@@ -30,10 +30,12 @@ export class GetRoomsDto extends PaginationDto {
 }
 
 export class RoomReservationDto {
+  @ValidateNested()
   @Type(() => UserDto)
   @ApiProperty({ type: UserDto })
   user: UserDto;
 
+  @ValidateNested()
   @Type(() => DateRangeDto)
   @ApiProperty({ type: DateRangeDto })
   dateRange: DateRangeDto;
